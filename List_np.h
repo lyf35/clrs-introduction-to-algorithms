@@ -56,7 +56,7 @@ public:
 	void print(std::ostream& os);
 	void reverse();
 };
-template<typename T> listnode_np<T>* my_xor(const listnode_np<T>* left, const listnode_np<T>* right)//ptr类型不能直接做异或运算，因此要先将指针转换类型，让编译器以为是在操纵unsigned类型的指针并调用自带的异或运算符。计算完成之后再将类型转为ptr。
+template<typename T> listnode_np<T>* my_xor(const listnode_np<T>* left, const listnode_np<T>* right)//ptr类型不能直接做异或运算，因此要先将指针转换类型，让编译器以为是在操纵unsigned类型的指针并调用自带的异或运算符。计算完成之后再将类型转为ptr
 {
 	return (listnode_np<T>*)((unsigned long(left)) ^ (unsigned long(right))); //转成unsigned long是因为c++中unsigned long和指针类型的字节数相等
 }

@@ -20,6 +20,22 @@ private:
 	std::shared_ptr<listnode<T>> tail;
 	status link;
 public:
+	List(status stat = double_link) :link(stat)
+	{
+		head = std::make_shared<listnode<T>>();
+		size = 0;
+		if (link == circular_link) //如果是环形列表的话，那么用于指代表尾的tail指针就可以不用，初始化时直接让prev和next两指针都指向自己形成环路
+		{
+			head->prev = head;
+			head->next = head;
+		}
+		if (link == double_link) //如果不是环形列表，head和tail指针都要使用
+		{
+			tail = std::make_shared<listnode<T>>();
+			head->next = tail;
+			tail->prev = head;
+		}
+	};
 	std::shared_ptr<listnode<T>> get_end()
 	{
 		return tail->prev;
@@ -36,22 +52,13 @@ public:
 	{
 		return head;
 	}
-	List(status stat = double_link)
+	void change_head(std::shared_ptr<listnode<T>> node) //为环形链表修改head指针
 	{
-		head = std::make_shared<listnode<T>>();
-		if (link == circular_link) //如果是环形列表的话，那么用于指代表尾的tail指针就可以不用，初始化时直接让prev和next两指针都指向自己形成环路
+		if (link == circular_link)
 		{
-			head->prev = head;
-			head->next = head;
+			head = node;
 		}
-		if (link == double_link) //如果不是环形列表，head和tail指针都要使用
-		{
-			tail = std::make_shared<listnode<T>>();
-			head->next = tail;
-			tail->prev = head;
-			size = 0;
-		}
-	};
+	}
 	void copy(List c)
 	{
 		head(c.head);
@@ -59,31 +66,60 @@ public:
 		size(c.size);
 		link(c.link);
 	}
-	void insert_begin(T elem)
+	std::shared_ptr<listnode<T>> insert_begin(T elem)
 	{
+		if (size == 0 && link == circular_link)
+		{
+			head->element = elem;
+			size++;
+			return head;
+		}
 		std::shared_ptr<listnode<T>> temp = std::make_shared<listnode<T>>(listnode<T>(head, head->next, elem));
 		head->next->prev = temp;
 		head->next = temp;
 		size++;
+		return temp;
 	}
-	void insert_end(T elem)
+	std::shared_ptr<listnode<T>> insert_end(T elem)
 	{
-		std::shared_ptr<listnode<T>> temp = std::make_shared<listnode<T>>(listnode<T>(tail->prev, tail, elem));
-		tail->prev->next = temp;
-		tail->prev = temp;
-		size++;
+		if (link == double_link)
+		{
+			std::shared_ptr<listnode<T>> temp = std::make_shared<listnode<T>>(listnode<T>(tail->prev, tail, elem));
+			tail->prev->next = temp;
+			tail->prev = temp;
+			size++;
+			return temp;
+		}
+		else
+		{
+			if (size == 0)
+			{
+				head->element = elem;
+				size++;
+				return head;
+			}
+			else
+			{
+				std::shared_ptr<listnode<T>> temp = std::make_shared<listnode<T>>(listnode<T>(head->prev, head, elem));
+				head->prev->next = temp;
+				head->prev = temp;
+				size++;
+				return temp;
+			}
+		}
 	}
-	void insert_before(T elem, int pos)
+	std::shared_ptr<listnode<T>> insert_before(T elem, int pos)
 	{
 		std::shared_ptr<listnode<T>> temp(head);
 		for (int i = 0;i < pos;i++)
 		{
 			temp = temp->next;
 		}
-		std::shared_ptr<listnode<T>> newnode = std::make_shared<listnode<T>>(listnode<T>(temp->next, tail->prev, elem));
+		std::shared_ptr<listnode<T>> newnode = std::make_shared<listnode<T>>(listnode<T>(temp->prev, temp->next, elem));
+		temp->prev->next = newnode;
 		temp->next->prev = newnode;
-		temp->next = newnode;
 		size++;
+		return temp;
 	}
 	listnode<T> operator[](int pos) const
 	{
@@ -96,17 +132,40 @@ public:
 	}
 	T delete_begin()
 	{
-		auto temp = head->next;
-		temp->next->prev = head;
-		head->next = temp->next;
+		if (link == circular_link&&size == 1)
+		{
+			auto temp = head;
+		}
+		else
+		{
+			auto temp = head->next;
+			temp->next->prev = head;
+			head->next = temp->next;
+		}
 		size--;
 		return temp->element;
 	}
 	T delete_end()
 	{
-		auto temp = tail->prev;
-		tail->prev = temp->prev;
-		temp->prev->next = tail;
+		if (link == double_link)
+		{
+			auto temp = tail->prev;
+			tail->prev = temp->prev;
+			temp->prev->next = tail;
+		}
+		else 
+		{
+			if (size > 1)
+			{
+				auto temp = head->prev;
+				head->prev = temp->prev;
+				temp->prev->next = head;
+			}
+			else
+			{
+				auto temp = head;
+			}
+		}
 		size--;
 		return temp->element;
 	}
@@ -119,14 +178,39 @@ public:
 		}
 		temp->prev->next = temp->next;
 		temp->next->prev = temp->prev;
+		temp->prev = NULL;
+		temp->next = NULL;
 		size--;
 		return temp->element;
 	}
-	void delete_node(listnode<T> node)
+	std::shared_ptr<listnode<T>> delete_node(std::shared_ptr<listnode<T>> node)
 	{
-		node.prev = node.next->prev;
-		node.next = node.prev->next;
-		size--;
+		if (size > 1)
+		{
+			node->prev->next = node->next;
+			node->next->prev = node->prev;
+			size--;
+			node->prev = NULL;
+			node->next = NULL;
+			return node;
+		}
+		else if (size == 1)
+		{
+			if (link == circular_link)
+			{
+				size--;
+				return head;
+			}
+			else if (node != head&&node != tail)
+			{
+				head->next = tail;
+				tail->prev = head;
+				size--;
+				node->prev = NULL;
+				node->next = NULL;
+				return node;
+			}
+		}
 	}
 	void delete_element(T elem)
 	{
@@ -144,7 +228,7 @@ public:
 		}
 		os << std::endl;
 	}
-	int get_size() const
+	int get_size()
 	{
 		return size;
 	}
