@@ -164,7 +164,7 @@ public:
 			}
 		}
 	}
-	void delete_fixup(std::shared_ptr<BinarytreeNode<T>> node, oritation orit) //改变结构之后要改变高度
+	void delete_fixup(std::shared_ptr<BinarytreeNode<T>> node, orientation orit) //改变结构之后要改变高度
 	{
 		while (node)
 		{

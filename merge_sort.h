@@ -49,7 +49,7 @@ template<typename T> std::vector<T> merge_sort(std::vector<T> vec)
 	return merge(temp1, temp2);
 }
 
-template<typename T> std::vector<T>::iterator my_binary_search(std::vector<T>::iterator beg, std::vector<T>::iterator end, T elem)//返回正好相等的那个元素的迭代器，或者可以在某元素位置之前插入不影响整体顺序的那个迭代器
+template<typename T> typename std::vector<T>::iterator my_binary_search(typename std::vector<T>::iterator beg, typename std::vector<T>::iterator end, T elem)//返回正好相等的那个元素的迭代器，或者可以在某元素位置之前插入不影响整体顺序的那个迭代器
 {
 	if (end==beg)
 	{

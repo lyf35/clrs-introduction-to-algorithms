@@ -83,7 +83,7 @@ template<typename W> struct graph_edge
 	}
 };
 
-template<typename T, typename W> class graph
+template<typename T, typename W> class graph //T对应顶点的数据类型，W对应边的数据类型
 {
 	friend bool operator<(std::tuple<int, int, double> a, std::tuple<int, int, double> b);
 	friend bool operator>(std::tuple<int, int, double> a, std::tuple<int, int, double> b);
@@ -140,6 +140,21 @@ public:
 	{
 		return number;
 	}
+	std::shared_ptr<graph_edge<W>> get_edge(int i, int j)
+	{
+		if (matrix[i][j])
+		{
+			return matrix[i][j];
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	graph_vertex<T> get_vertex(int i)
+	{
+		return vertex[i];
+	}
 	void insert_vertex(T v)
 	{
 		vertex.emplace_back(v);
@@ -163,11 +178,12 @@ public:
 				vertex[m].outdegree--;
 			}
 		}
+		vertex.erase(i + vertex.begin());
 		number--;
-		matrix.erase(i);
+		matrix.erase(i + matrix.begin());
 		for (int j = 0;j < number;j++)
 		{
-			matrix[j].erase(i);
+			matrix[j].erase(i + matrix[j].begin());
 		}
 	}
 	void insert_edge(int i, int j, W d = W(), double w = 1.0, int c = 0, int f = 0) //代表从编号i到编号j的顶点之间的边
@@ -449,7 +465,7 @@ public:
 		}
 		return MST;
 	}
-	std::vector<std::vector<std::shared_ptr<graph_edge<W>>>> MST_Prim() //prim算法生成的最小生成树，在任意一个时刻，所有已经选择的顶点
+	std::vector<std::vector<std::shared_ptr<graph_edge<W>>>> MST_Prim() //prim算法生成的最小生成树
 	{
 		Fibonacci_heap<std::tuple<int, int, double>> vertex_heap; //储存顶点及其信息的一个斐波那契堆，tuple中的第一个元素代表顶点编号，第二个元素代表父结点的编号，第三个代表当前顶点所连接的权重最小的边（不包括已经取出的顶点）
 		std::vector<std::shared_ptr<Fibonacci_heap_node<std::tuple<int, int, double>>>> node;

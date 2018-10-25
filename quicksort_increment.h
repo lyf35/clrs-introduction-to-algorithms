@@ -8,7 +8,7 @@
 #include<ctime>
 
 //升序快排
-template<typename T> size_t partition(std::vector<T>& vec, int p, int r)
+template<typename T> size_t partition(std::vector<T>& vec, int p, int r) //对数组p~r部分做划分
 {
 	T x = vec[r];
 	int i = p - 1;
@@ -26,7 +26,7 @@ template<typename T> size_t partition(std::vector<T>& vec, int p, int r)
 		}
 	}
 	std::swap(vec[i + 1], vec[r]);
-	if (cnt == r - p)
+	if (cnt == r - p) //如果整个划分区域全部都是一样的数，则返回它们的中点处
 	{
 		return (p + r) / 2;
 	}

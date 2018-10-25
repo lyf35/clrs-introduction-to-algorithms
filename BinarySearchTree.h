@@ -138,13 +138,13 @@ public:
 		}
 		else
 		{
-			if (temp == temp->parent->leftchild)
+			if (temp->parent&&temp == temp->parent->leftchild) //一定要先确认父指针是否存在！
 			{
 				return temp->parent;
 			}
 			else
 			{
-				while (temp == temp->parent->rightchild)
+				while (temp->parent&&temp == temp->parent->rightchild)
 				{
 					temp = temp->parent;
 				}
@@ -162,13 +162,13 @@ public:
 		}
 		else
 		{
-			if (temp == temp->parent->rightchild)
+			if (temp->parent&&temp == temp->parent->rightchild)
 			{
 				return temp->parent;
 			}
 			else
 			{
-				while (temp == temp->parent->leftchild)
+				while (temp->parent&&temp == temp->parent->leftchild)
 				{
 					temp = temp->parent;
 				}

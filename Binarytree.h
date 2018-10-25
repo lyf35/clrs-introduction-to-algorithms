@@ -279,7 +279,7 @@ public:
 			}
 		}
 	}
-	void insert_container(std::shared_ptr<BinarytreeNode<T>> p, List<std::shared_ptr<BinarytreeNode<T>>>& container)
+	void insert_container(std::shared_ptr<BinarytreeNode<T>> p, List<std::shared_ptr<BinarytreeNode<T>>>& container) //用于后序遍历中，按顺序将点加入list
 	{
 		while(p)
 		{
@@ -304,7 +304,7 @@ public:
 		container.insert_end(node);
 		while (container.get_size())
 		{
-			if (container.get_end()->element != node->parent) //若栈顶节点不是当前结点的父亲，则需要对栈顶节点所在位置做搜索。也就是说，此时栈顶节点是右节点，而当前节点是它的左节点
+			if (container.get_end()->element != node->parent) //若栈顶节点不是当前结点的父亲，则需要对栈顶节点所在位置做搜索。也就是说，此时栈顶节点是右节点，而当前节点是左节点
 			{
 				insert_container(container.get_end()->element, container);
 			}
